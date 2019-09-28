@@ -5,7 +5,6 @@ use r2d2;
 use r2d2_sqlite;
 use rusqlite::NO_PARAMS;
 use serde_derive::{Deserialize, Serialize};
-use std::{thread::sleep, time::Duration};
 
 pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
 pub type Connection = r2d2::PooledConnection<r2d2_sqlite::SqliteConnectionManager>;
@@ -33,7 +32,5 @@ fn get_random_word(conn: Connection) -> Result<Vec<Entry>, Error> {
             definition: row.get(2),
         })
         .and_then(|mapped_rows| Ok(mapped_rows.map(|row| row.unwrap()).collect::<Vec<Entry>>()))?;
-
-    sleep(Duration::from_secs(2)); //see comments at top of main.rs
     Ok(annuals)
 }
