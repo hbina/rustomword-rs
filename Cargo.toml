@@ -1,0 +1,32 @@
+[package]
+name = "rustomword"
+version = "0.2.0"
+authors = ["hbina085 <hanif.ariffin.4326@gmail.com>"]
+edition = "2018"
+license = "GPL-3.0-only"
+description = "A website that will give you a random word every time you visit it."
+repository = "https://github.com/hbina/rustomword"
+readme = "README.md"
+homepage = "https://rustomword.herokuapp.com/"
+
+[dependencies]
+actix-rt = "1.1.1"
+actix-web = "2.0.0"
+dotenv = "0.15.0"
+env_logger = "0.7.1"
+failure = "0.1.8"
+futures = "0.3.5"
+num_cpus = "1.13.0"
+r2d2 = "0.8.9"
+r2d2_postgres = "0.16.0"
+postgres = "0.17.5"
+serde = "1.0.115"
+serde_json = "1.0.57"
+serde_derive = "1.0.115"
+listenfd = "0.3.3"
+log = "0.4.11"
+rand = "0.7.3"
+chrono = { version = "0.4.15", features = ["serde"] }
+diesel = { version = "1.4.5", features = ["postgres", "r2d2", "uuid", "chrono"] }
+diesel_migrations = "1.4.0"
+lazy_static = "1.4.0"
