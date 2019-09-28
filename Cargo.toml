@@ -1,10 +1,13 @@
 [package]
 name = "rustomword"
 version = "0.1.0"
-authors = ["hbina085"]
+authors = ["hbina085 <hanif.ariffin.4326@gmail.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+license = "GPL-3.0-only"
+description = "A website that will give you a random word every time you visit it."
+repository = "https://github.com/hbina/rustomword"
+readme = "README.md"
+homepage = "https://rustomword.herokuapp.com/"
 
 [dependencies]
 actix-rt = "0.2.2"
@@ -16,8 +19,8 @@ failure = "0.1.1"
 futures = "0.1"
 num_cpus = "1.10.0"
 r2d2 = "0.8.2"
-r2d2_sqlite = "0.8.0"
-rusqlite = "0.16"
+r2d2_postgres = "0.14.0"
+postgres = "0.15.2"
 serde = "1.0"
 serde_json = "1.0"
 serde_derive = "1.0"

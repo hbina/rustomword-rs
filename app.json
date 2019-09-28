@@ -1,0 +1,11 @@
+{
+    "name": "RustomWord",
+    "description": "Generates a random word each time you visit!",
+    "repository": "https://github.com/hbina/rustomword",
+    "success_url": "/",
+    "keywords": ["rust", "actix", "english"],
+    "website": "https://github.com/hbina/rustomword",
+    "env": {
+      "BUILDPACK_URL": "https://github.com/emk/heroku-buildpack-rust.git"
+    }
+  }
