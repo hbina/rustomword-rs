@@ -1,17 +1,10 @@
 use std::io;
 
-use actix_web::{middleware, web, App, Error as AWError, HttpResponse, HttpServer};
-use futures::future::Future;
+use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
 
 mod db;
-use db::Pool;
-
-fn index(db: web::Data<Pool>) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute(&db)
-        .from_err()
-        .and_then(|res| Ok(HttpResponse::Ok().json(res)))
-}
+mod api;
 
 fn main() -> io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
@@ -43,14 +36,14 @@ fn main() -> io::Result<()> {
         r2d2_postgres::PostgresConnectionManager::new(database_url, r2d2_postgres::TlsMode::None)
             .map_err(|error| println!("unable to connect to error:{}", error))
             .unwrap();
-    let pool = Pool::new(manager).unwrap();
+    let pool = db::Pool::new(manager).unwrap();
 
     // Start http server
     match HttpServer::new(move || {
         App::new()
             .data(pool.clone())
             .wrap(middleware::Logger::default())
-            .service(web::resource("/").route(web::get().to_async(index)))
+            .service(web::resource("/").route(web::get().to_async(api::index)))
     })
     .bind(("0.0.0.0", port))
     {
