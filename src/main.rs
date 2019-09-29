@@ -1,10 +1,9 @@
 use std::io;
-
 use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
 
-mod db;
 mod api;
+mod db;
 
 fn main() -> io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
