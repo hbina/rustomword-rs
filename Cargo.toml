@@ -1,6 +1,6 @@
 [package]
 name = "rustomword"
-version = "0.1.1"
+version = "0.1.1-alpha.0"
 authors = ["hbina085 <hanif.ariffin.4326@gmail.com>"]
 edition = "2018"
 license = "GPL-3.0-only"
