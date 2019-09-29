@@ -1,11 +1,11 @@
-use std::io;
 use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
+use std::time::Duration;
 
 mod api;
 mod db;
 
-fn main() -> io::Result<()> {
+fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "actix_web=info");
 
     let port: u16 = std::env::var("PORT")
@@ -28,7 +28,6 @@ fn main() -> io::Result<()> {
         .expect("Invalid database URI");
 
     env_logger::init();
-    let sys = actix_rt::System::new("rustom_word");
 
     // Start N db executor actors (N = number of cores avail)
     let manager =
@@ -36,23 +35,33 @@ fn main() -> io::Result<()> {
             .map_err(|error| println!("unable to connect to error:{}", error))
             .unwrap();
     let pool = db::Pool::new(manager).unwrap();
+    // let words_pool = std::sync::Mutex::new(;
+    // CRON job to refresh random words
+    let h1 = std::thread::spawn(move || loop {
+        std::thread::sleep(Duration::from_secs(5));
+    });
 
     // Start http server
-    match HttpServer::new(move || {
-        App::new()
-            .data(pool.clone())
-            .wrap(middleware::Logger::default())
-            .service(web::resource("/").route(web::get().to_async(api::index)))
-    })
-    .bind(("0.0.0.0", port))
-    {
-        Ok(ok) => {
-            println!("launching server"); // TODO :: Print current time
-            ok.start();
-        }
-        Err(err) => {
-            panic!("unable to bind:{}", err);
-        }
-    };
-    sys.run()
+    let h2 = std::thread::spawn(move || {
+        match HttpServer::new(move || {
+            App::new()
+                .data(pool.clone())
+                .wrap(middleware::Logger::default())
+                .service(web::resource("/").route(web::get().to_async(api::index)))
+        })
+        .bind(("0.0.0.0", port))
+        {
+            Ok(ok) => {
+                println!("launching server"); // TODO :: Print current time
+                ok.run().unwrap();
+            }
+            Err(err) => {
+                panic!("unable to bind:{}", err);
+            }
+        };
+    });
+
+    h1.join().unwrap();
+    h2.join().unwrap();
+    Ok(())
 }
