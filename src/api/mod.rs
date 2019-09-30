@@ -1,12 +1,15 @@
-use actix_web::{Error as AWError, HttpResponse};
-use futures::future::Future;
+use actix_web::Responder;
+use rand::seq::SliceRandom;
+use std::sync::{Arc, Mutex};
 
 use crate::db;
 
-pub fn index(
-    db: actix_web::web::Data<db::Pool>,
-) -> impl Future<Item = HttpResponse, Error = AWError> {
-    db::execute(&db)
-        .from_err()
-        .and_then(|res| Ok(HttpResponse::Ok().json(res)))
+pub fn index(data: actix_web::web::Data<Arc<Mutex<Vec<db::Entry>>>>) -> impl Responder {
+    Arc::try_unwrap(*data)
+        .and_then(|res| {
+            let r = res.lock().unwrap();
+            let choices = *r;
+            choices[0]
+        })
+        .and_then(|ok| ok);
 }

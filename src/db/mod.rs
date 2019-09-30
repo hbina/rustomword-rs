@@ -1,6 +1,5 @@
-use actix_web::{web, Error as AWError};
+use actix_web::{Error, HttpRequest, HttpResponse, Responder};
 use failure::Error as FError;
-use futures::Future;
 use r2d2;
 use r2d2_postgres;
 use serde_derive::{Deserialize, Serialize};
@@ -8,9 +7,12 @@ use serde_derive::{Deserialize, Serialize};
 pub type Pool = r2d2::Pool<r2d2_postgres::PostgresConnectionManager>;
 pub type Connection = r2d2::PooledConnection<r2d2_postgres::PostgresConnectionManager>;
 
-pub fn execute(pool: &Pool) -> impl Future<Item = Vec<Entry>, Error = AWError> {
+pub fn execute(pool: &Pool) -> Vec<Entry> {
     let pool = pool.clone();
-    web::block(move || refill(pool.get()?)).from_err()
+    match pool.get() {
+        Ok(ok) => refill(ok).unwrap_or(Vec::new()),
+        Err(err) => Vec::new(),
+    }
 }
 
 fn refill(conn: Connection) -> Result<Vec<Entry>, FError> {
@@ -42,5 +44,19 @@ impl Entry {
             word_type: word_type,
             definitions: definitions,
         }
+    }
+}
+
+impl Responder for Entry {
+    type Error = Error;
+    type Future = Result<HttpResponse, Error>;
+
+    fn respond_to(self, _req: &HttpRequest) -> Self::Future {
+        let body = serde_json::to_string(&self)?;
+
+        // Create response and set content type
+        Ok(HttpResponse::Ok()
+            .content_type("application/json")
+            .body(body))
     }
 }

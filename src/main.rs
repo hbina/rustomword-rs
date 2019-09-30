@@ -1,5 +1,6 @@
 use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 mod api;
@@ -35,33 +36,28 @@ fn main() -> std::io::Result<()> {
             .map_err(|error| println!("unable to connect to error:{}", error))
             .unwrap();
     let pool = db::Pool::new(manager).unwrap();
-    // let words_pool = std::sync::Mutex::new(;
+    let local_data: Arc<Mutex<Vec<db::Entry>>> = Arc::new(Mutex::new(db::execute(&pool)));
     // CRON job to refresh random words
     let h1 = std::thread::spawn(move || loop {
+        println!("running CRON job...");
         std::thread::sleep(Duration::from_secs(5));
     });
 
-    // Start http server
     let h2 = std::thread::spawn(move || {
+        let data_proxy = web::Data::new(local_data);
         match HttpServer::new(move || {
             App::new()
-                .data(pool.clone())
+                .data(data_proxy.clone())
                 .wrap(middleware::Logger::default())
                 .service(web::resource("/").route(web::get().to_async(api::index)))
         })
-        .bind(("0.0.0.0", port))
+        .bind(("0.0.0.0", port.clone()))
         {
-            Ok(ok) => {
-                println!("launching server"); // TODO :: Print current time
-                ok.run().unwrap();
-            }
-            Err(err) => {
-                panic!("unable to bind:{}", err);
-            }
-        };
+            Ok(ok) => ok.run().unwrap(),
+            Err(err) => panic!("unable to start server err:{}", err),
+        }
     });
-
-    h1.join().unwrap();
     h2.join().unwrap();
+    h1.join().unwrap();
     Ok(())
 }
