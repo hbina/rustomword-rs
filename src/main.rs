@@ -1,6 +1,5 @@
 use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
-use std::time::Duration;
 
 mod api;
 mod db;
@@ -36,32 +35,21 @@ fn main() -> std::io::Result<()> {
             .unwrap();
     let pool = db::Pool::new(manager).unwrap();
     // let words_pool = std::sync::Mutex::new(;
-    // CRON job to refresh random words
-    let h1 = std::thread::spawn(move || loop {
-        std::thread::sleep(Duration::from_secs(5));
-    });
-
-    // Start http server
-    let h2 = std::thread::spawn(move || {
-        match HttpServer::new(move || {
-            App::new()
-                .data(pool.clone())
-                .wrap(middleware::Logger::default())
-                .service(web::resource("/").route(web::get().to_async(api::index)))
-        })
-        .bind(("0.0.0.0", port))
-        {
-            Ok(ok) => {
-                println!("launching server"); // TODO :: Print current time
-                ok.run().unwrap();
-            }
-            Err(err) => {
-                panic!("unable to bind:{}", err);
-            }
-        };
-    });
-
-    h1.join().unwrap();
-    h2.join().unwrap();
-    Ok(())
+    HttpServer::new(move || {
+        App::new()
+            .data(pool.clone())
+            .wrap(middleware::Logger::default())
+            .service(web::resource("/").route(web::get().to_async(api::index)))
+    })
+    .bind(("0.0.0.0", port))
+    .map_err(|error| {
+        panic!(
+            "Unable to bind to port 0.0.0.0/{} with error:{}",
+            port, error
+        )
+    })
+    .map(|res| {
+        println!("launching server");
+        res.run().unwrap()
+    })
 }
