@@ -10,11 +10,11 @@ pub type Connection = r2d2::PooledConnection<r2d2_postgres::PostgresConnectionMa
 
 pub fn execute(pool: &Pool) -> impl Future<Item = Vec<Entry>, Error = AWError> {
     let pool = pool.clone();
-    web::block(move || refill(pool.get()?)).from_err()
+    web::block(move || get_words(pool.get()?)).from_err()
 }
 
-fn refill(conn: Connection) -> Result<Vec<Entry>, FError> {
-    let stmt = "SELECT * FROM entries ORDER BY RANDOM() LIMIT 100000;";
+fn get_words(conn: Connection) -> Result<Vec<Entry>, FError> {
+    let stmt = "SELECT * FROM entries ORDER BY RANDOM() LIMIT 10;";
 
     let prep_stmt = conn.prepare(stmt).unwrap();
     prep_stmt

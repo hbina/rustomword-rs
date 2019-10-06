@@ -1,5 +1,7 @@
 use actix_web::{middleware, web, App, HttpServer};
 use r2d2_postgres;
+#[macro_use]
+extern crate tera;
 
 mod api;
 mod db;
@@ -25,7 +27,6 @@ fn main() -> std::io::Result<()> {
         })
         .parse()
         .expect("Invalid database URI");
-
     env_logger::init();
 
     // Start N db executor actors (N = number of cores avail)
@@ -34,9 +35,11 @@ fn main() -> std::io::Result<()> {
             .map_err(|error| println!("unable to connect to error:{}", error))
             .unwrap();
     let pool = db::Pool::new(manager).unwrap();
-    // let words_pool = std::sync::Mutex::new(;
+
     HttpServer::new(move || {
+        let templates = compile_templates!("templates/**/*");
         App::new()
+            .data(templates)
             .data(pool.clone())
             .wrap(middleware::Logger::default())
             .service(web::resource("/").route(web::get().to_async(api::index)))

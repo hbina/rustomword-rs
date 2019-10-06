@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rustomword</title>
+
+    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="/static/css/normalize.css">
+    <link rel="stylesheet" href="/static/css/skeleton.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <p>
+            <!-- nothing to see here -->
+        </p>
+
+        <form action="/next" method="post">
+        </form>
+
+        <div class="row">
+            <div class="twelve columns">
+                <ul>
+                    {% for entry in entries %}
+                    <li>
+                        <h1>{{entry.word}}</h1>
+                        <h2>{{entry.word_type}}</h2>
+                        <h3>{{entry.definitions}}</h3>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
