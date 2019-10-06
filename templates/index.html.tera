@@ -2,39 +2,75 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Rustomword</title>
+    <style>
+        css_hide_element {
+            display: none;
+        }
+        
+        #css_round_corners_element {
+            border-radius: 5px;
+            background: #c8c8c8;
+            padding: 20px;
+            align-self: center
+        }
+        
+        #css_round_corners_container {
+            border-radius: 5px;
+            background: #969696;
+            padding: 20px;
+            align-self: center
+        }
+    </style>
+    <script type="text/javascript">
+        var slideIndex = 0;
 
-    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="/static/css/normalize.css">
-    <link rel="stylesheet" href="/static/css/skeleton.css">
-    <link rel="stylesheet" href="/static/css/style.css">
+        function cycle_element_by_n(n) {
+            cycle_element(slideIndex += n);
+        }
+
+        function cycle_element(n) {
+            var i;
+            var x = document.getElementsByClassName("css_hide_element");
+            if (n > x.length) {
+                slideIndex = 1
+            }
+            if (n < 1) {
+                slideIndex = x.length
+            }
+            for (i = 0; i < x.length; i++) {
+                x[i].style.display = "none";
+            }
+            x[slideIndex - 1].style.display = "block";
+        }
+        window.onload = cycle_element_by_n(0);
+    </script>
 </head>
 
-<body>
-    <div class="container">
-        <p>
-            <!-- nothing to see here -->
-        </p>
-
-        <form action="/next" method="post">
-        </form>
-
-        <div class="row">
-            <div class="twelve columns">
-                <ul>
-                    {% for entry in entries %}
-                    <li>
-                        <h1>{{entry.word}}</h1>
-                        <h2>{{entry.word_type}}</h2>
-                        <h3>{{entry.definitions}}</h3>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+<body style="background-color:#646464">
+    <div>
+        <button onClick="window.location.reload();">
+            Refresh bucket
+        </button>
+    </div>
+    <button onclick="cycle_element_by_n(-1)">
+        Previous
+    </button>
+    <button onclick="cycle_element_by_n(1)">
+        Next
+    </button>
+    <div>
+        <ul>
+            {% for entry in entries %}
+            <li>
+                <div id="css_round_corners_container" class="css_hide_element ">
+                    <h1 id="css_round_corners_element ">{{entry.word}}</h1>
+                    <h2 id="css_round_corners_element ">{{entry.word_type}}</h2>
+                    <h3 id="css_round_corners_element ">{{entry.definitions}}</h3>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </body>
 
