@@ -8,6 +8,12 @@ A live one is available here : https://rustomword.herokuapp.com/
 
 # Setting Up Local Instance
 
+## Watching
+
+Use this command to watch,
+
+`systemfd --no-pid -s http::5000 -- cargo watch -x run`
+
 ## Notes
 
 Since Heroku's database URI are dynamic, there is no way to test local instance of this application against the official `rustomword`'s backend. Hence, you will have to provide the database yourself.
@@ -16,7 +22,7 @@ Thankfully, it's not *that* hard.
 
 ## Prerequisite
 
-Currently, our setup is not database agnostic so you will have to install PostgreSQL.
+Currently, our setup is not database agnostic, so you will have to install PostgreSQL.
 
 ## Instructions
 

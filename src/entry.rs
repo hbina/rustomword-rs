@@ -34,7 +34,7 @@ pub struct Entry {
     pub id: u32,
     pub word: String,
     pub word_type: WordType,
-    pub definition: String,
+    pub definition: Vec<String>,
 }
 
 impl From<EntryProxy> for Entry {
@@ -50,7 +50,13 @@ impl From<EntryProxy> for Entry {
             id: value.id as u32,
             word: value.word,
             word_type,
-            definition: value.definition,
+            definition: value
+                .definition
+                .split(';')
+                .map(|x| x.trim_start())
+                // .map(String::from)
+                .map(|x| x.replace("\n   ", " "))
+                .collect::<Vec<_>>(),
         }
     }
 }
