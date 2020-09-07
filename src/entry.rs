@@ -7,10 +7,6 @@ use diesel::prelude::*;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
-///     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-/// 	word	varchar ( 25 ) NOT NULL,
-/// 	wordtype	varchar ( 20 ) NOT NULL,
-/// 	definition	varchar NOT NULL
 #[derive(Serialize, Debug, Queryable, Insertable, Deserialize)]
 #[table_name = "entries"]
 pub struct EntryProxy {

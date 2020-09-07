@@ -27,7 +27,6 @@ async fn index() -> Result<HttpResponse, ApiError> {
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
-
     db::init();
 
     let mut listenfd = ListenFd::from_env();
