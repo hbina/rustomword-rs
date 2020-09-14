@@ -11,7 +11,7 @@ homepage = "https://rustomword.herokuapp.com/"
 
 [dependencies]
 actix-rt = "1.1.1"
-actix-web = "2.0.0"
+actix-web = "3.0.1"
 dotenv = "0.15.0"
 env_logger = "0.7.1"
 failure = "0.1.8"
